@@ -102,14 +102,19 @@ class MatrizRala:
         self.shape = (M, N)
 
     def __getitem__( self, Idx ):
-        # COMPLETAR:
+        # Esta funcion implementa la indexacion ( Idx es una tupla (m,n) ) -> A[m,n]
         #accedo a la fila m en el diccionario
         #recorro la lista enlazada hasta encontrar el valor n
         #devuelvo lo que hay en esa posicion
-        for i in range(self.filas(Idx[0])):
-        
-        # Esta funcion implementa la indexacion ( Idx es una tupla (m,n) ) -> A[m,n]
-            pass
+        if self.filas(Idx[0]) == None:
+            return 0
+        else:
+            nodo = self.filas(Idx[0]).raiz
+            while nodo.siguiente is not None:
+                if nodo.valor[0] == Idx[1]:
+                    return nodo.valor
+                nodo = nodo.siguiente
+            return 0
     
     def __setitem__( self, Idx, v ):
         # COMPLETAR:
