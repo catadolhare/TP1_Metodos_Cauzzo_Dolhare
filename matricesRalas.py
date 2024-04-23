@@ -106,34 +106,38 @@ class MatrizRala:
         #accedo a la fila m en el diccionario
         #recorro la lista enlazada hasta encontrar el valor n
         #devuelvo lo que hay en esa posicion
-        if self.filas(Idx[0]) == None:
+        if self.filas.get(Idx[0]) == None: #porque si uso corchetes en vez de get no funciona?
             return 0
         else:
-            nodo = self.filas(Idx[0]).raiz
+            nodo = self.filas[Idx[0]].raiz
             while nodo.siguiente is not None:
                 if nodo.valor[0] == Idx[1]:
-                    return nodo.valor
+                    return nodo.valor[1]
                 nodo = nodo.siguiente
             return 0
     
     def __setitem__( self, Idx, v ):
-        # COMPLETAR:
+        # Esta funcion implementa la asignacion durante indexacion ( Idx es una tupla (m,n) ) -> A[m,n] = v
         #accedo a la fila m en el diccionario
         #recorro la lista enlazada hasta la posicion n
         #agrego nodo para esa posicion
-        if self.filas(Idx[0]) is None: #si no hay nada en esa fila, creo una lista enlazada
+        if self.filas.get(Idx[0]) == None: #si no hay nada en esa fila, creo una lista enlazada
             self.filas[Idx[0]] = ListaEnlazada()
-            self.filas[Idx[0]].push(v)
+            self.filas[Idx[0]].push((Idx[1], v))
         else: #si ya hay algo, puede ser que no haya nada en esa posicion o que haya que reemplazar
-            nodo = self.filas(Idx[0]).raiz
-            while nodo.siguiente is not None: #recorro la lista, si encuentra algo en n lo reemplaza
-                if nodo.valor[0] == Idx[1]: #donde esta n en el nodo?
-                    nodo.valor = v
+            nodo = self.filas[Idx[0]].raiz
+            previo = None
+            while nodo != None: #recorro la lista, si encuentra algo en n lo reemplaza
+                if nodo.valor[0] == Idx[1]:
+                    nodo.valor = (Idx[1], v)
+                    return
+                if nodo.valor[0] > Idx[1]:
+                    self.filas[Idx[0]].insertarDespuesDeNodo((Idx[1], v), previo)
                     return
                 nodo = nodo.siguiente
-            self.filas(Idx[0]).push(v) #no lo guarda en orden
-
-        # Esta funcion implementa la asignacion durante indexacion ( Idx es una tupla (m,n) ) -> A[m,n] = v
+                previo = nodo
+            self.filas[Idx[0]].push((Idx[1], v)) #si llegamos al final de la lista y no se cumple ninguno de los ifs
+        
 
     def __mul__( self, k ):
         # COMPLETAR:
