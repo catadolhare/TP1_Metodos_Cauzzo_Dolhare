@@ -106,11 +106,11 @@ class MatrizRala:
         #accedo a la fila m en el diccionario
         #recorro la lista enlazada hasta encontrar el valor n
         #devuelvo lo que hay en esa posicion
-        if self.filas.get(Idx[0]) == None: #porque si uso corchetes en vez de get no funciona?
+        if self.filas.get(Idx[0]) == None:
             return 0
         else:
             nodo = self.filas[Idx[0]].raiz
-            while nodo.siguiente is not None:
+            while nodo != None:
                 if nodo.valor[0] == Idx[1]:
                     return nodo.valor[1]
                 nodo = nodo.siguiente
@@ -123,45 +123,53 @@ class MatrizRala:
         #agrego nodo para esa posicion
         if self.filas.get(Idx[0]) == None: #si no hay nada en esa fila, creo una lista enlazada
             self.filas[Idx[0]] = ListaEnlazada()
-            self.filas[Idx[0]].push((Idx[1], v))
+            self.filas[Idx[0]].push([Idx[1], v])
         else: #si ya hay algo, puede ser que no haya nada en esa posicion o que haya que reemplazar
+            if self.filas.get(Idx[0]) == 0:
+                self.filas[Idx[0]].insertarFrente([Idx[1], v])
             nodo = self.filas[Idx[0]].raiz
             previo = None
             while nodo != None: #recorro la lista, si encuentra algo en n lo reemplaza
+                if nodo.valor[0] < Idx[1]:
+                    pass
                 if nodo.valor[0] == Idx[1]:
                     nodo.valor = (Idx[1], v)
                     return
                 if nodo.valor[0] > Idx[1]:
-                    self.filas[Idx[0]].insertarDespuesDeNodo((Idx[1], v), previo)
+                    self.filas[Idx[0]].insertarDespuesDeNodo([Idx[1], v], previo)
                     return
                 nodo = nodo.siguiente
                 previo = nodo
-            self.filas[Idx[0]].push((Idx[1], v)) #si llegamos al final de la lista y no se cumple ninguno de los ifs
+            self.filas[Idx[0]].push([Idx[1], v]) #si llegamos al final de la lista y no se cumple ninguno de los ifs
         
 
     def __mul__( self, k ):
-        # COMPLETAR:
-        for i in range(len(self)):
+        # Esta funcion implementa el producto matriz-escalar -> A * k
+        if self.filas == None:
+            return 0
+        for i in self.filas.keys():
             nodo = self.filas[i].raiz
-            while nodo.siguiente is not None:
-                nodo.valor = nodo.valor * k
+            while nodo != None:
+                nodo.valor = [nodo.valor[0], nodo.valor[1] * k]
                 nodo = nodo.siguiente
 
-        # Esta funcion implementa el producto matriz-escalar -> A * k
+        
 
     
     def __rmul__( self, k ): #cual es la diferencia con anterior??????????????????
         # Esta funcion implementa el producto escalar-matriz -> k * A
-        for i in range(len(self)):
+        for i in self.filas.keys():
             nodo = self.filas[i].raiz
-            while nodo.siguiente is not None:
-                nodo.valor = nodo.valor * k
+            while nodo != None:
+                nodo.valor[1] = nodo.valor[1] * k
                 nodo = nodo.siguiente
 
     def __add__( self, other ):
-        res:MatrizRala = MatrizRala( len(self.filas), len(self.shape[0])) #cual es el valor de n?
-        for i in range(len(self.filas)):
-            for j in range(len(self.shape[0])):
+        if self.shape != other.shape:
+            raise Exception('Las matrices no tienen las mismas dimensiones')
+        res:MatrizRala = MatrizRala(len(self.shape[0]), len(self.shape[1])) #cual es el valor de n?
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
                 res[i,j] = self[i,j] + other[i,j]
         return res
         # Esta funcion implementa la suma de matrices -> A + B
