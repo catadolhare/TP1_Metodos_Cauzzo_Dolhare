@@ -59,6 +59,27 @@ class TestSumaMatrices:
         C = A+B
         assert C[0,0] == 1 and C[0,2] == 6 and C[2,2] == 4 and C[1,1] == 2
 
+class TestRestaMatrices:
+    def test_distintasDimensiones( self ):
+        A = MatrizRala(2,3)
+        B = MatrizRala(3,3)
+        with pytest.raises(Exception) as e_info:
+            C = A - B
+        
+    def test_restaCorrectamente( self ):
+        A = MatrizRala(3,3)
+        B = MatrizRala(3,3)
+
+        A[0,0]=1
+        A[0,2]=6
+        A[2,2]=4
+
+        B[0,2]=3
+        B[1,1]=2
+
+        C = A-B
+        assert C[0,0] == 1 and C[0,2] == 3 and C[2,2] == 4 and C[1,1] == -2
+
 class TestProductoPorEscalar:
     def test_escalaCorrectamente( self ):
         A = MatrizRala(3,3)

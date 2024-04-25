@@ -207,7 +207,9 @@ class MatrizRala:
 def GaussJordan( A, b ):
     # Hallar solucion x para el sistema Ax = b
     # Devolver error si el sistema no tiene solucion o tiene infinitas soluciones, con el mensaje apropiado
-    if A.shape[0] != b.shape[1]:
+
+    #si las filas de A no son iguales a las filas de b, no se puede haver gauss jordan ya que no se puede hacer la matriz aumentada
+    if A.shape[0] != b.shape[0]:
         raise ValueError("Las dimensiones de la matriz A y el vector b no son compatibles para buscar una solucion")
     
     #creamos la matriz aumentada, copiando los valores de A y agregando los valores de b
@@ -220,7 +222,7 @@ def GaussJordan( A, b ):
     #hacemos gauss jordan
     for i in range(matriz_aumentada.shape[0]):
         #agarramos el pivote correspondiente a la fila i
-        if matriz_aumentada[i, i] == 0: #si es 0, es infintas al menos que el pivote este abajo
+        if matriz_aumentada[i, i] == 0: #si es 0, verificamos que no haya otra fila con un valor distinto de 0 en la columna i. si lo hay, invertimos las filas para obtener el pivot en el lugar correcto
             for j in range(i+1, matriz_aumentada.shape[0]):
                 if matriz_aumentada[j, i] != 0:
                     matriz_aumentada[i], matriz_aumentada[j] = matriz_aumentada[j], matriz_aumentada[i] #invierte las filas
@@ -239,20 +241,20 @@ def GaussJordan( A, b ):
     for i in range(matriz_aumentada.shape[0]):
         for j in range(matriz_aumentada.shape[1]):
             if matriz_aumentada[i, j] != 0:
-                filas_en_cero = False
-    if filas_en_cero:
+                filas_en_cero = False #si encuentra un valor distinto de 0, no hay infinitas soluciones
+    if filas_en_cero: #si todas las filas son 0, hay infinitas soluciones
         raise ValueError("El sistema tiene infinitas soluciones")
     
     #verificar si no hay solucion
     for i in range(matriz_aumentada.shape[0]):
         for j in range(matriz_aumentada.shape[1]-1):
-            if matriz_aumentada[i, j] == 0 and matriz_aumentada[i, matriz_aumentada.shape[1]-1] != 0:
+            if matriz_aumentada[i, j] == 0 and matriz_aumentada[i, matriz_aumentada.shape[1]-1] != 0: #si hay una fila con todos los valores 0 y el valor de la ultima columna (valor que representa b) es distinto de 0, no hay solucion
                 raise ValueError("El sistema no tiene solucion")
         
     #devolver la solucion
-    res = MatrizRala(A.shape[1], 1)
+    res = MatrizRala(A.shape[1], 1) #creamos una matriz de 1 columna y tantas filas como columnas de A para devolver la solucion
     for i in range(matriz_aumentada.shape[0]):
-        res[i, 0] = matriz_aumentada[i, matriz_aumentada.shape[1]-1 / matriz_aumentada[i, i]]
+        res[i, 0] = matriz_aumentada[i, matriz_aumentada.shape[1]-1 / matriz_aumentada[i, i]] #copiamos los valores de la ultima columna de la matriz aumentada (representa el b) divido el valor del pivote a la matriz de solucion
     
     return res
 
