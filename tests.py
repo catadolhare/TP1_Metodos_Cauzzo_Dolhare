@@ -4,6 +4,7 @@
 
 import pytest
 from matricesRalas import MatrizRala
+from matricesRalas import GaussJordan
 import numpy as np
 
 class TestIndexacionMatrices:
@@ -127,3 +128,41 @@ class TestProductoMatricial:
         C1 = A @ Id
         C2 = Id @ A
         assert C1[0,0] == 1 and C1[0,2] == 3 and C1[1,2] == 4 and C2[0,0] == 1 and C2[0,2] == 3 and C2[1,2] == 4 and C1.shape == C2.shape and C1.shape == A.shape
+
+class TestGaussJordan:
+    # Test 1: Matriz con solución única
+    def test_identidad(self):
+        A = MatrizRala(2,2)
+        B = MatrizRala(2,1)
+        solucion_esperada = MatrizRala(2,1)
+
+        A[0,0] = 1
+        A[1,0] = 0
+        A[0,1] = 0
+        A[1,1] = 1
+
+        B[0, 0] = 3
+        B[1, 0] = 2
+
+        solucion_esperada[0, 0] = 3.0
+        solucion_esperada[1, 0] = 2.0
+
+        assert GaussJordan(A, B) == solucion_esperada
+
+    def test_matriz_con_solucion_unica(self):
+        A = MatrizRala(2,2)
+        B = MatrizRala(2,1)
+        solucion_esperada = MatrizRala(2,1)
+
+        A[0,0] = 1
+        A[1,0] = 2
+        A[0,1] = 2
+        A[1,1] = 3
+
+        B[0, 0] = 7
+        B[1, 0] = 6
+
+        solucion_esperada[0, 0] = -9
+        solucion_esperada[1, 0] = 8
+
+        assert GaussJordan(A, B) == solucion_esperada
