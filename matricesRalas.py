@@ -102,10 +102,7 @@ class MatrizRala:
         self.shape = (M, N)
 
     def __getitem__( self, Idx ):
-        # Esta funcion implementa la indexacion ( Idx es una tupla (m,n) ) -> A[m,n]
-        #accedo a la fila m en el diccionario
-        #recorro la lista enlazada hasta encontrar el valor n
-        #devuelvo lo que hay en esa posicion
+        # Devuelve el valor de la matriz en la posición (m, n)
         if self.filas.get(Idx[0]) == None:
             return 0
         else:
@@ -117,81 +114,81 @@ class MatrizRala:
             return 0
     
     def __setitem__( self, Idx, v ):
-        # Esta funcion implementa la asignacion durante indexacion ( Idx es una tupla (m,n) ) -> A[m,n] = v
-        #accedo a la fila m en el diccionario
-        #recorro la lista enlazada hasta la posicion n
-        #agrego nodo para esa posicion
+        # Asigna un valor a la matriz en la posición (m, n)
         if self.filas.get(Idx[0]) == None: #si no hay nada en esa fila, creo una lista enlazada
             self.filas[Idx[0]] = ListaEnlazada()
-            self.filas[Idx[0]].push([Idx[1], v])
-        else: #si ya hay algo, puede ser que no haya nada en esa posicion o que haya que reemplazar
-            if self.filas.get(Idx[0]) == 0:
-                self.filas[Idx[0]].insertarFrente([Idx[1], v])
-            nodo = self.filas[Idx[0]].raiz
-            previo = None
-            while nodo != None: #recorro la lista, si encuentra algo en n lo reemplaza
-                if nodo.valor[0] < Idx[1]:
-                    pass
-                if nodo.valor[0] == Idx[1]:
-                    nodo.valor = (Idx[1], v)
-                    return
-                if nodo.valor[0] > Idx[1]:
-                    self.filas[Idx[0]].insertarDespuesDeNodo([Idx[1], v], previo)
-                    return
-                nodo = nodo.siguiente
-                previo = nodo
-            self.filas[Idx[0]].push([Idx[1], v]) #si llegamos al final de la lista y no se cumple ninguno de los ifs
-        
+        nodo = self.filas[Idx[0]].raiz
+        prev = None
+        while nodo != None:
+            if nodo.valor[0] == Idx[1]:
+                nodo.valor = (Idx[1], v)
+                return
+            if nodo.valor[0] > Idx[1]:
+                if prev is None:
+                    self.filas[Idx[0]].insertarFrente((Idx[1], v))
+                else:
+                    self.filas[Idx[0]].insertarDespuesDeNodo((Idx[1], v), prev)
+                return
+            prev = nodo
+            nodo = nodo.siguiente
+        self.filas[Idx[0]].push((Idx[1], v))
 
     def __mul__( self, k ):
-        # Esta funcion implementa el producto matriz-escalar -> A * k
-        if self.filas == None:
-            return 0
-        for i in self.filas.keys():
-            nodo = self.filas[i].raiz
+        # Multiplica la matriz por un escalar
+        res:MatrizRala = MatrizRala(self.shape[0], self.shape[1])
+        for fila in range(self.shape[0]):
+            if fila not in self.filas: #si el diccionario esta vacio, pasar a proxima fila
+                continue
+            nodo = self.filas[fila].raiz
             while nodo != None:
-                nodo.valor = [nodo.valor[0], nodo.valor[1] * k]
+                res[fila, nodo.valor[0]] = nodo.valor[1] * k
                 nodo = nodo.siguiente
+        return res
 
-        
-
-    
-    def __rmul__( self, k ): #cual es la diferencia con anterior??????????????????
-        # Esta funcion implementa el producto escalar-matriz -> k * A
-        for i in self.filas.keys():
-            nodo = self.filas[i].raiz
+    def __rmul__( self, k ):
+        # Multiplica un escalar por la matriz
+        '''res:MatrizRala = MatrizRala(self.shape[0], self.shape[1])
+        for fila in range(self.shape[0]):
+            if fila not in self.filas: #si el diccionario esta vacio, pasar a proxima fila
+                continue
+            nodo = self.filas[fila].raiz
             while nodo != None:
-                nodo.valor[1] = nodo.valor[1] * k
+                res[fila, nodo.valor[0]] = nodo.valor[1] * k
                 nodo = nodo.siguiente
+        return res'''
+        return self * k #es lo mismo que lo anterior pero llamando al metodo???
 
     def __add__( self, other ):
+        # Suma de matrices
         if self.shape != other.shape:
-            raise Exception('Las matrices no tienen las mismas dimensiones')
-        res:MatrizRala = MatrizRala(len(self.shape[0]), len(self.shape[1])) #cual es el valor de n?
+            raise Exception("Las matrices son de dimensiones diferentes")
+        res = MatrizRala(self.shape[0], self.shape[1])
         for i in range(self.shape[0]):
             for j in range(self.shape[1]):
-                res[i,j] = self[i,j] + other[i,j]
+                res[i, j] = self[i, j] + other[i, j]
         return res
-        # Esta funcion implementa la suma de matrices -> A + B
-    
+
     def __sub__( self, other ):
-        res:MatrizRala = MatrizRala( len(self.filas), len(self.shape[0]))
-        for i in range(len(self.filas)):
-            for j in range(len(self.shape[0])):
-                res[i,j] = self[i,j] - other[i,j]
+        # Resta de matrices
+        if self.shape != other.shape:
+            raise Exception("Las matrices son de dimensiones diferentes")
+        res = MatrizRala(self.shape[0], self.shape[1])
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
+                res[i, j] = self[i, j] - other[i, j]
         return res
-        # Esta funcion implementa la resta de matrices (pueden usar suma y producto) -> A - B
     
     def __matmul__( self, other ):
-        # COMPLETAR:
-        res:MatrizRala = MatrizRala( len(self.filas), len(self.shape[0]))
-        for i in range(len(self.filas)):
-            for j in range(len(other.shape[0])):
-                for k in range(len(self.shape[0])):
-                    res[i,j] += self[i,k] * other[k,j]
-        return res
-        # Esta funcion implementa el producto matricial (notado en Python con el operador "@" ) -> A @ B
-        pass                
+        # Producto matricial
+        if self.shape[1] != other.shape[0]:
+            raise ValueError("Las dimensiones de las matrices no permite hacer el producto matricial")
+
+        res = MatrizRala(self.shape[0], other.shape[1])
+        for i in range(self.shape[0]):
+            for j in range(other.shape[1]):
+                for k in range(self.shape[1]):
+                    res[i, j] += self[i, k] * other[k, j]
+        return res          
 
         
     def __repr__( self ):
@@ -210,7 +207,56 @@ class MatrizRala:
 def GaussJordan( A, b ):
     # Hallar solucion x para el sistema Ax = b
     # Devolver error si el sistema no tiene solucion o tiene infinitas soluciones, con el mensaje apropiado
-    pass
+    if A.shape[0] != b.shape[1]:
+        raise ValueError("Las dimensiones de la matriz A y el vector b no son compatibles para buscar una solucion")
+    
+    #creamos la matriz aumentada, copiando los valores de A y agregando los valores de b
+    matriz_aumentada = MatrizRala(A.shape[0], A.shape[1] + 1)
+    for i in range(A.shape[0]):
+        for j in range(A.shape[1]):
+            matriz_aumentada[i, j] = A[i, j]
+        matriz_aumentada[i, A.shape[1]] = b[i, 0]
+    
+    #hacemos gauss jordan
+    for i in range(matriz_aumentada.shape[0]):
+        #agarramos el pivote correspondiente a la fila i
+        if matriz_aumentada[i, i] == 0: #si es 0, es infintas al menos que el pivote este abajo
+            for j in range(i+1, matriz_aumentada.shape[0]):
+                if matriz_aumentada[j, i] != 0:
+                    matriz_aumentada[i], matriz_aumentada[j] = matriz_aumentada[j], matriz_aumentada[i] #invierte las filas
+                    break
+                else:
+                    pass #no solucion o solucion infinita????????    
+        #hacer 0 los demas elementos de la columna
+        for j in range(matriz_aumentada.shape[1]):
+            if j == i: #estoy en el pivote, no le hago nada
+                continue
+            factor = matriz_aumentada[i, j] / matriz_aumentada[i, i]
+            matriz_aumentada[j] = matriz_aumentada[j] - matriz_aumentada[i] * factor #le resta a la fila j la fila i multiplicada por el factor
+    
+    #verificar si hay infinitas soluciones
+    filas_en_cero = True
+    for i in range(matriz_aumentada.shape[0]):
+        for j in range(matriz_aumentada.shape[1]):
+            if matriz_aumentada[i, j] != 0:
+                filas_en_cero = False
+    if filas_en_cero:
+        raise ValueError("El sistema tiene infinitas soluciones")
+    
+    #verificar si no hay solucion
+    for i in range(matriz_aumentada.shape[0]):
+        for j in range(matriz_aumentada.shape[1]-1):
+            if matriz_aumentada[i, j] == 0 and matriz_aumentada[i, matriz_aumentada.shape[1]-1] != 0:
+                raise ValueError("El sistema no tiene solucion")
+        
+    #devolver la solucion
+    res = MatrizRala(A.shape[1], 1)
+    for i in range(matriz_aumentada.shape[0]):
+        res[i, 0] = matriz_aumentada[i, matriz_aumentada.shape[1]-1 / matriz_aumentada[i, i]]
+    
+    return res
+
+
 
 
 
