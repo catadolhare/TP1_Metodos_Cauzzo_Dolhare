@@ -1,5 +1,4 @@
-# IMPORTANTE: Para importar estas clases en otro archivo (que se encuentre en la misma carpeta), escribir:
-# from matricesRalas import MatrizRala, GaussJordan 
+# Camila Cauzzo, Catalina Dolhare
 
 class ListaEnlazada:
     def __init__( self ):

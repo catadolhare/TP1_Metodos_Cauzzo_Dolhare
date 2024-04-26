@@ -1,6 +1,4 @@
-# Para correr los tests:
-#   1- Instalar pytest: ("pip install pytest")
-#   2- Correr en la terminal "pytest tests.py"
+# Camila Cauzzo, Catalina Dolhare
 
 import pytest
 from matricesRalas import MatrizRala
