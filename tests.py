@@ -162,7 +162,52 @@ class TestGaussJordan:
         B[0, 0] = 7
         B[1, 0] = 6
 
-        solucion_esperada[0, 0] = -9
-        solucion_esperada[1, 0] = 8
+        solucion_esperada[0, 0] = -9.0
+        solucion_esperada[1, 0] = 8.0
 
         assert GaussJordan(A, B) == solucion_esperada
+
+    def test_matriz_con_infinitas_soluciones(self):
+        A = MatrizRala(2,2)
+        B = MatrizRala(2,1)
+
+        A[0,0] = 2
+        A[1,0] = 4
+        A[0,1] = 3
+        A[1,1] = 6
+
+        B[0, 0] = 6
+        B[1, 0] = 12
+
+        with pytest.raises(Exception) as e_info:
+            GaussJordan(A, B)
+
+    def test_matriz_sin_solucion(self):
+        A = MatrizRala(2,2)
+        B = MatrizRala(2,1)
+
+        A[0,0] = 0
+        A[1,0] = 2
+        A[2,0] = 5
+        A[0,1] = 1
+        A[1,1] = -1
+        A[2,1] = -8
+        A[0,2] = -4
+        A[1,2] = 2
+        A[2,2] = 7
+
+        B[0, 0] = 8
+        B[1, 0] = 1
+        B[2, 0] = 1
+
+        with pytest.raises(Exception) as e_info:
+            GaussJordan(A, B)
+    
+    def test_matriz_sin_solucion(self):
+        A = MatrizRala(2,3)
+        B = MatrizRala(2,1)
+
+        with pytest.raises(Exception) as e_info:
+            GaussJordan(A, B)
+        
+    

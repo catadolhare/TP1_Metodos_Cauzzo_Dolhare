@@ -229,29 +229,27 @@ def GaussJordan( A, b ):
         if pivote == 0: #si es 0, verificamos que no haya otra fila con un valor distinto de 0 en la columna i. si lo hay, invertimos las filas para obtener el pivot en el lugar correcto
             for l in range(i+1, A.shape[0]):
                 if matriz_aumentada[l, i] != 0:
-                    matriz_aumentada.invertir_filas(matriz_aumentada[l], matriz_aumentada[j]) #invierte las filas
+                    matriz_aumentada.invertir_filas(l, j) 
+                    #invierte las filas
+                    pivote = matriz_aumentada[i, i] #actualizamos el pivote
                     break
                 else:
                     raise ValueError("El sistema no tiene solucion unica") #pasamos a la proximo columna 
 
         #hacer 0 los demas elementos de la columna
-        for columna in range(A.shape[1] + 1):
-            matriz_aumentada[i, columna] = matriz_aumentada[i, columna] / pivote
-
         for fila in range(A.shape[0]):
-            if fila == i: 
+            if fila == i: #estoy en pivote, no hago nada
                 continue
-            factor = matriz_aumentada[fila, i]
-            
-            for columna in range(A.shape[1] + 1):
-                matriz_aumentada[fila, columna] = matriz_aumentada[fila, columna] - matriz_aumentada[i, columna] * factor
-        
-        for columna in range(matriz_aumentada.shape[1]-1, 0, -1):
-            for fila in range(matriz_aumentada.shape[0]-1, 0, -1):
-                if columna == fila: 
-                    continue
-                factor = matriz_aumentada[fila, columna] / pivote
-                matriz_aumentada[fila, columna] = matriz_aumentada[fila, columna] - matriz_aumentada[i, columna] * factor
+
+            for j in range(A.shape[1] + 1):
+                matriz_aumentada[i, j] = matriz_aumentada[i, j] / pivote #hacemos que el pivote sea 1
+
+            for k in range(A.shape[0] + 1):
+                if k != i:
+                    factor = matriz_aumentada[k, i]
+                    for j in range(A.shape[1] + 1):
+                        matriz_aumentada[k, j] = matriz_aumentada[k, j] - matriz_aumentada[i, j] * factor
+
     #verificar si hay infinitas soluciones
     filas_en_cero = True
     for i in range(matriz_aumentada.shape[0]):
