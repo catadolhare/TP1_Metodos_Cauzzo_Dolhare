@@ -125,6 +125,10 @@ class TestProductoMatricial:
 
         C1 = A @ Id
         C2 = Id @ A
+        print(C1)
+        print(C2)
+        print(C1.shape)
+        print(C2.shape)
         assert C1[0,0] == 1 and C1[0,2] == 3 and C1[1,2] == 4 and C2[0,0] == 1 and C2[0,2] == 3 and C2[1,2] == 4 and C1.shape == C2.shape and C1.shape == A.shape
 
 class TestGaussJordan:
@@ -200,87 +204,3 @@ class TestGaussJordan:
         x = GaussJordan(A,b)
 
         assert np.isclose( x[0,0], 0.5 ) and np.isclose(x[1,0], -0.1195) and np.isclose(x[2,0], 0.041667)
-
-'''
-class TestGaussJordan:
-    # Test 1: Matriz con solución única
-    def test_identidad(self):
-        A = MatrizRala(2,2)
-        B = MatrizRala(2,1)
-        solucion_esperada = MatrizRala(2,1)
-
-        A[0,0] = 1
-        A[1,0] = 0
-        A[0,1] = 0
-        A[1,1] = 1
-
-        B[0, 0] = 3
-        B[1, 0] = 2
-
-        solucion_esperada[0, 0] = 3.0
-        solucion_esperada[1, 0] = 2.0
-
-        assert GaussJordan(A, B) == solucion_esperada
-
-    def test_matriz_con_solucion_unica(self):
-        A = MatrizRala(2,2)
-        B = MatrizRala(2,1)
-        solucion_esperada = MatrizRala(2,1)
-
-        A[0,0] = 1
-        A[1,0] = 2
-        A[0,1] = 2
-        A[1,1] = 3
-
-        B[0, 0] = 7
-        B[1, 0] = 6
-
-        solucion_esperada[0, 0] = -9.0
-        solucion_esperada[1, 0] = 8.0
-
-        assert GaussJordan(A, B) == solucion_esperada
-
-    def test_matriz_con_infinitas_soluciones(self):
-        A = MatrizRala(2,2)
-        B = MatrizRala(2,1)
-
-        A[0,0] = 2
-        A[1,0] = 4
-        A[0,1] = 3
-        A[1,1] = 6
-
-        B[0, 0] = 6
-        B[1, 0] = 12
-
-        with pytest.raises(Exception) as e_info:
-            GaussJordan(A, B)
-
-    def test_matriz_sin_solucion(self):
-        A = MatrizRala(2,2)
-        B = MatrizRala(2,1)
-
-        A[0,0] = 0
-        A[1,0] = 2
-        A[2,0] = 5
-        A[0,1] = 1
-        A[1,1] = -1
-        A[2,1] = -8
-        A[0,2] = -4
-        A[1,2] = 2
-        A[2,2] = 7
-
-        B[0, 0] = 8
-        B[1, 0] = 1
-        B[2, 0] = 1
-
-        with pytest.raises(Exception) as e_info:
-            GaussJordan(A, B)
-    
-    def test_matriz_sin_solucion(self):
-        A = MatrizRala(2,3)
-        B = MatrizRala(2,1)
-
-        with pytest.raises(Exception) as e_info:
-            GaussJordan(A, B)
-        
-'''    

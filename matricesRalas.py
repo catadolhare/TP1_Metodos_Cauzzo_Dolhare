@@ -141,14 +141,6 @@ class MatrizRala:
                 res[fila, nodo.valor[0]] = nodo.valor[1] * k
                 nodo = nodo.siguiente
         return res
-        '''for fila in range(self.shape[0]):
-            if fila not in self.filas: #si el diccionario esta vacio, pasar a proxima fila
-                continue
-            nodo = self.filas[fila].raiz
-            while nodo != None:
-                res[fila, nodo.valor[0]] = nodo.valor[1] * k
-                nodo = nodo.siguiente
-        return res'''
 
     def __rmul__( self, k ):
         # Esta funcion implementa el producto escalar-matriz -> k * A
@@ -208,19 +200,23 @@ class MatrizRala:
     def __matmul__( self, other ):
         # Esta funcion implementa el producto matricial (notado en Python con el operador "@" ) -> A @ B
         if self.shape[1] != other.shape[0]:
-            raise ValueError("Las dimensiones de las matrices no permite hacer el producto matricial")
-        
+            raise ValueError("Las dimensiones de las matrices no permiten hacer el producto matricial")
+    
         res = MatrizRala(self.shape[0], other.shape[1])
+    
         for fila_self in self.filas:
             nodo_self = self.filas[fila_self].raiz
+        
             while nodo_self != None:
-                for fila_other in other.filas:
-                    nodo_other = other.filas[fila_other].raiz
+                columna = nodo_self.valor[0]
+                if columna in other.filas:
+                    nodo_other = other.filas[columna].raiz
+
                     while nodo_other != None:
-                        if nodo_self.valor[0] == nodo_other.valor[0]:
-                            res[fila_self, nodo_other.valor[0]] += nodo_self.valor[1] * nodo_other.valor[1]
-                        nodo_other = nodo_other.siguiente
-                nodo_self = nodo_self.siguiente
+                        res[fila_self, nodo_other.valor[0]] += self[fila_self, columna] * other[columna, nodo_other.valor[0]]
+                        nodo_other = nodo_other.siguiente 
+                nodo_self = nodo_self.siguiente           
+    
         return res
 
     def invertir_filas(self, fila1, fila2):
