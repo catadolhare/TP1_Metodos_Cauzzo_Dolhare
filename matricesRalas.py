@@ -148,6 +148,14 @@ class MatrizRala:
 
     def __add__( self, other ):
         # Esta funcion implementa la suma de matrices -> A + B
+        '''if self.shape != other.shape:
+            raise Exception("Las matrices son de dimensiones diferentes")
+        res = MatrizRala(self.shape[0], self.shape[1])
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
+                res[i, j] = self[i, j] + other[i, j]
+        return res'''
+        
         if self.shape != other.shape:
             raise Exception("Las matrices son de dimensiones diferentes")
         res = MatrizRala(self.shape[0], self.shape[1])
@@ -198,27 +206,17 @@ class MatrizRala:
         return res
     
     def __matmul__( self, other ):
-        # Esta funcion implementa el producto matricial (notado en Python con el operador "@" ) -> A @ B
         if self.shape[1] != other.shape[0]:
             raise ValueError("Las dimensiones de las matrices no permiten hacer el producto matricial")
     
         res = MatrizRala(self.shape[0], other.shape[1])
-    
-        for fila_self in self.filas:
-            nodo_self = self.filas[fila_self].raiz
-        
-            while nodo_self != None:
-                columna = nodo_self.valor[0]
-                if columna in other.filas:
-                    nodo_other = other.filas[columna].raiz
-
-                    while nodo_other != None:
-                        res[fila_self, nodo_other.valor[0]] += self[fila_self, columna] * other[columna, nodo_other.valor[0]]
-                        nodo_other = nodo_other.siguiente 
-                nodo_self = nodo_self.siguiente           
-    
+        #Recorremos las filas no vacias de la matriz self
+        for i in self.filas:
+            for j in range(other.shape[1]): #Recorremos las columnas de la matriz other
+                for k in range(self.shape[1]): #Recorremos las columnas de la matriz self (que tiene el mismo tamaño que las filas de other) nuevamente para poder hacer la multiplicación
+                    res[i, j] += self[i, k] * other[k, j]
         return res
-
+        
     def invertir_filas(self, fila1, fila2):
         # Intercambia dos filas de la matriz
         self.filas[fila1], self.filas[fila2] = self.filas[fila2], self.filas[fila1]
@@ -263,7 +261,7 @@ def GaussJordan( A, b ):
                     pivote = matriz_aumentada[i, i] #actualizamos el pivote
                     break
                 else:
-                    raise ValueError("El sistema no tiene solucion unica") #pasamos a la proximo columna 
+                    raise ValueError("El sistema no tiene solucion unica")
 
         #hacer 0 los demas elementos de la columna
         for fila in range(A.shape[0]):
@@ -280,11 +278,12 @@ def GaussJordan( A, b ):
                         matriz_aumentada[k, j] -= matriz_aumentada[i, j] * factor
 
     filas_A_cero = True
+    #Recorremos todas las filas de la matriz aumentada, verificando que todas las columnas de A (todas las columnas de la matriz aumentada menos la ultima) sean 0 y que la ultima columna no sea 0
     for i in range(matriz_aumentada.shape[0]):
         for j in range(matriz_aumentada.shape[1]-1):
             if matriz_aumentada[i, j] != 0:
                 filas_A_cero = False
-        if filas_A_cero and matriz_aumentada[matriz_aumentada.shape[0]-1, matriz_aumentada.shape[1]-1] != 0:
+        if filas_A_cero and matriz_aumentada[i, matriz_aumentada.shape[1]-1] != 0:
             raise ValueError("El sistema no tiene solucion")
     
     variables_libres = False
