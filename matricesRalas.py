@@ -114,6 +114,8 @@ class MatrizRala:
     
     def __setitem__( self, Idx, v ):
         # Esta funcion implementa la asignacion durante indexacion ( Idx es una tupla (m,n) ) -> A[m,n] = v
+        if v == 0: #si el valor es 0, no lo guardo en un nodo de la matrizs
+            return
         if self.filas.get(Idx[0]) == None: #si no hay nada en esa fila, creo una lista enlazada
             self.filas[Idx[0]] = ListaEnlazada()
         nodo = self.filas[Idx[0]].raiz
@@ -148,52 +150,13 @@ class MatrizRala:
 
     def __add__( self, other ):
         # Esta funcion implementa la suma de matrices -> A + B
-        '''if self.shape != other.shape:
+        if self.shape != other.shape:
             raise Exception("Las matrices son de dimensiones diferentes")
         res = MatrizRala(self.shape[0], self.shape[1])
         for i in range(self.shape[0]):
             for j in range(self.shape[1]):
                 res[i, j] = self[i, j] + other[i, j]
-        return res'''
-        
-        if self.shape != other.shape:
-            raise Exception("Las matrices son de dimensiones diferentes")
-        res = MatrizRala(self.shape[0], self.shape[1])
-        for fila in self.filas:
-            # Si la fila no está en other, es sumarle 0, copiamos los valroes
-            if fila not in other.filas:
-                nodo = self.filas[fila].raiz
-                while nodo != None:
-                    res[fila, nodo.valor[0]] = nodo.valor[1]
-                    nodo = nodo.siguiente
-            else:
-                # Si la fila está en other, sumamos los valores
-                nodo_self = self.filas[fila].raiz
-                nodo_other = other.filas[fila].raiz
-                while nodo_self != None or nodo_other != None:
-                    #tenemos que ver si los valores de la columna son iguales o no
-                    if nodo_self != None and (nodo_other == None or nodo_self.valor[0] < nodo_other.valor[0]):
-                        #Si self sigue teniendo nodos y other no o si la columna de self es menor a la de other, no hay valor de other distinto de 0 para sumarle a other, copiamos el valor de self
-                        res[fila, nodo_self.valor[0]] = nodo_self.valor[1]
-                        nodo_self = nodo_self.siguiente
-                    elif nodo_other != None and (nodo_self == None or nodo_self.valor[0] > nodo_other.valor[0]):
-                        #Si other sigue teniendo nodos y sel no o si la columna de self es mayor a la de other, no hay valor de self distinto de 0 para sumarle a other, copiamos el valor de other
-                        res[fila, nodo_other.valor[0]] = nodo_other.valor[1]
-                        nodo_other = nodo_other.siguiente
-                    else:  # Ambos nodos estan en la misma columna, sumamos los valores de ambas matrices
-                        res[fila, nodo_self.valor[0]] = nodo_self.valor[1] + nodo_other.valor[1]
-                        nodo_self = nodo_self.siguiente
-                        nodo_other = nodo_other.siguiente
-        
-        # Agregar las filas de other que no están en self
-        for fila in other.filas:
-            if fila not in self.filas:
-                nodo = other.filas[fila].raiz
-                while nodo != None:
-                    res[fila, nodo.valor[0]] = nodo.valor[1]
-                    nodo = nodo.siguiente
         return res
-        
 
     def __sub__( self, other ):
         # Esta funcion implementa la resta de matrices (pueden usar suma y producto) -> A - B
